@@ -1,8 +1,8 @@
 {
   "author": "Soutaro Matsumoto",
   "name": "pull-request-conditional-merge",
-  "version": "1.0.0",
-  "description": "Merge GitHub PR if all CI suceeded and an specific label is given",
+  "version": "1.0.1",
+  "description": "Merge GitHub pull request when CI passes",
   "main": "./src/pull-request-conditional-merge.coffee",
   "dependencies": {
     "coffee-script": "^1.10.0",
