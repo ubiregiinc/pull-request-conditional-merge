@@ -13,6 +13,8 @@ You may forget a PR to be merged fixing serious typo on your web site and should
 
 You definitely need a bot to merge PR automatically, when CI got green.
 
+![Pull Request merged by bot](https://raw.githubusercontent.com/soutaro/pull-request-conditional-merge/master/merged-by-bot.png)
+
 This library is to merge PR when:
 
 * The PR is labeled with `ShipIt` (you can customize the name of label)
