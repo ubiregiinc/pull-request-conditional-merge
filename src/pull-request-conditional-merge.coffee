@@ -70,8 +70,12 @@ class PullRequestConditionalMerge
   @find: (github, { owner, repo, sha }, k) ->
     url = "https://api.github.com/repos/#{owner}/#{repo}/pulls"
     github.get url, (pulls) =>
+      cm = null
+      
       pulls.forEach (pull) =>
         if pull.head.sha == sha
-          k(new PullRequestConditionalMerge(github, pull))
+          cm = new PullRequestConditionalMerge(github, pull)
+
+      k(cm)
 
 module.exports = PullRequestConditionalMerge
