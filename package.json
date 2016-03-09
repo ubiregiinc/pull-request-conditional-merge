@@ -5,7 +5,7 @@
   "description": "Merge GitHub PR if all CI suceeded and an specific label is given",
   "main": "./src/pull-request-conditional-merge.coffee",
   "dependencies": {
-    "better-require": "0.0.3",
+    "coffee-script": "^1.10.0",
     "githubot": "^1.0.0"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/soutaro/merge-it-later.git"
+    "url": "https://github.com/soutaro/pull-request-conditional-merge.git"
   },
   "license": "MIT",
   "keywords": [
@@ -29,7 +29,7 @@
     "pull request"
   ],
   "bugs": {
-    "url": "https://github.com/soutaro/merge-it-later/issues"
+    "url": "https://github.com/soutaro/pull-request-conditional-merge/issues"
   },
-  "homepage": "https://github.com/merge-it-later"
+  "homepage": "https://github.com/pull-request-conditional-merge"
 }

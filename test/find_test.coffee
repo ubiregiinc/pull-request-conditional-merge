@@ -1,5 +1,4 @@
 test = require("ava")
-sinon = require("sinon")
 nock = require('nock')
 github = require('githubot')
 
