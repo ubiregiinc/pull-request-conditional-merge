@@ -1,5 +1,7 @@
 # Pull Request Conditional Merge
 
+[![Build Status](https://travis-ci.org/soutaro/pull-request-conditional-merge.svg?branch=master)](https://travis-ci.org/soutaro/pull-request-conditional-merge)
+
 This library is to implement a bot to merge your pull request when CI passes.
 
 You CI does not finish instantly; running tests may take tens of minutes, or many jobs may be queued already.
