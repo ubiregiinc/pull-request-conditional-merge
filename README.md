@@ -1,15 +1,15 @@
 # Pull Request Conditional Merge
 
-This library is implement a bot to merge your pull request when CI passes.
+This library is to implement a bot to merge your pull request when CI passes.
 
-You CI does not finish instantly; running tests takes minutes, or many jobs already may be queued.
+You CI does not finish instantly; running tests may take tens of minutes, or many jobs may be queued already.
 Then, you may have said something like this:
 
 > Okay, I will merge this PR once CI passes.
 
 This does not make you feel nice.
 You have to remember PRs you have to merge it later.
-You may forget a PR to be merged fixing serious typo on your web site and should be deployed as soon as possible.
+You may forget a PR to be merged, and it may be fixing a simple typo but expected to be deployed as soon as possible.
 
 You definitely need a bot to merge PR automatically, when CI got green.
 
@@ -32,28 +32,18 @@ $ npm install --save pull-request-conditional-merge
 
 ```coffee
 PullRequestConditionalMerge = require("pull-request-conditional-merge")
+PullRequestConditionalMergeExpress = require("pull-request-conditional-merge/express")
 
 module.exports = (robot) ->
   github = require('githubot')(robot)
+  robot.router.post "/merge-pullrequest", PullRequestConditionalMergeExpress.action(PullRequestConditionalMerge, github, robot.logger, 'your-company')
+```
 
-  robot.router.post "/merge-pullrequest", (req, res) ->
-    res.end ""
+You can pass additional setup function which takes `PullRequestConditonalMerge` object to `action`.
 
-    return unless req.get('X-Github-Event') == "status"
-
-    data = req.body
-    repo = data.name.split('/')[1]
-    sha = data.sha
-
-    robot.logger.debug "Receiving hook: repo=#{repo}, sha=#{sha}"
-
-    PullRequestConditionalMerge.find github, owner: "your-company", repo: repo, sha: sha, (pr) ->
-      if pr
-        robot.logger.debug "Found a PR: #{pr.pull.url}"
-        pr.mergeIfReady ->
-          robot.logger.debug "#{pr.pull.url} has been merged!"
-      else
-        robot.logger.debug "No PR found..."
+```coffee
+action = PullRequestConditionalMergeExpress.action PullRequestConditionalMerge, github, robot.logger, 'your-company', pr ->
+  pr.label = 'LetBotMerge'
 ```
 
 ### 3. Setup a status hook on your GitHub repo
@@ -105,6 +95,6 @@ PullRequestConditionalMerge.find github, owner: owner, repo: repo, sha: sha, (pr
   pr.commitMessage = -> "Merge by bot"
 ```
 
-## Author
+## License
 
-Soutaro Matsumoto (matsumoto@soutaro.com)
+The library is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
