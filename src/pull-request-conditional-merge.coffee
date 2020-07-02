@@ -59,7 +59,8 @@ class PullRequestConditionalMerge
       ss.some (s) ->
         s.state == "success"
 
-    checkSucceeds = @check_runs.every (check) ->
+    checkSucceeds = @check_runs.every (check) =>
+      @logger?.debug "status = #{check.status}, conclusion = #{check.conclusion}"
       check.status == "completed" && check.conclusion == "success"
 
     checkLength = @statuses.length + @check_runs.length
@@ -71,9 +72,9 @@ class PullRequestConditionalMerge
     @fetchIssue =>
       @logger?.debug "Fetched issue..."
       @fetchStatus =>
-        @logger?.debug "Fetched status..."
+        @logger?.debug "Fetched #{@statuses.length} status..."
         @fetchCheckRuns =>
-          @logger?.debug "Fetched check-runs..."
+          @logger?.debug "Fetched #{@check_runs.length} check-runs..."
           if @readyToMerge()
             @merge =>
               callback()
