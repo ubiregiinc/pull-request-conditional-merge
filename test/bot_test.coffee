@@ -50,6 +50,15 @@ test.beforeEach =>
       }
     ])
 
+  nock('https://api.github.com')
+    .get('/repos/soutaro/reponame/commits/xyzzy/check-runs')
+    .reply(200, {
+      check_runs: [
+        status: "completed"
+        conclusion: "success"
+      ]
+    })
+
   scopes.merge = nock('https://api.github.com')
     .put('/repos/soutaro/reponame/pulls/1/merge')
     .reply(200, {})
@@ -65,7 +74,8 @@ test.cb "actions merges pull request", (t) =>
     headers:
       "X-Github-Event": "status"
     body:
-      name: "mojombo/reponame"
+      repository:
+        full_name: "mojombo/reponame"
       sha: "1234567890"
 
   response = httpMocks.createResponse()
@@ -85,8 +95,33 @@ test.cb "action calls setup function", (t) =>
     headers:
       "X-Github-Event": "status"
     body:
-      name: "mojombo/reponame"
+      repository:
+        full_name: "mojombo/reponame"
       sha: "1234567890"
+
+  response = httpMocks.createResponse()
+
+  setupIsOK = false
+  setup = (pr) ->
+    setupIsOK = pr != null
+
+  action = Exp.action PRCM, github, null, "soutaro", setup, ->
+    t.truthy setupIsOK
+    t.end()
+
+  action(request, response)
+
+test.cb "check_run event calls setup function", (t) =>
+  request = httpMocks.createRequest
+    method: 'POST'
+    url: "dummy",
+    headers:
+      "X-Github-Event": "check_run"
+    body:
+      check_run:
+        head_sha: "1234567890"
+      repository:
+        full_name: "mojombo/reponame"
 
   response = httpMocks.createResponse()
 

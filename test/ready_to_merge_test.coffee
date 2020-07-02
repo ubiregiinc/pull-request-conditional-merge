@@ -28,6 +28,8 @@ test "ready when open, label is given, CI passes", (t) ->
     }
   ]
 
+  pr.check_runs = []
+
   t.truthy pr.readyToMerge()
 
 test "not ready when label is missing, CI passes", (t) ->
@@ -53,6 +55,8 @@ test "not ready when label is missing, CI passes", (t) ->
       state: "pending"
     }
   ]
+
+  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
 
@@ -80,6 +84,8 @@ test "not ready when label is given, but CI fails", (t) ->
     }
   ]
 
+  pr.check_runs = []
+
   t.falsy pr.readyToMerge()
 
 test "not ready when label is given, but some CI fails", (t) ->
@@ -106,6 +112,33 @@ test "not ready when label is given, but some CI fails", (t) ->
     }
   ]
 
+  pr.check_runs = []
+
+  t.falsy pr.readyToMerge()
+
+test "not ready when label is given, but some check-run fails", (t) ->
+  pr = new PRCM()
+
+  pr.pull = {
+    state: 'open'
+  }
+
+  pr.issue = {
+    labels: [
+      { name: "ShipIt" }
+    ]
+  }
+
+  pr.statuses = [
+  ]
+
+  pr.check_runs = [
+    {
+      status: "completed"
+      conclusion: "failed"
+    }
+  ]
+
   t.falsy pr.readyToMerge()
 
 test "not ready when label is given, but no CI succeeded", (t) ->
@@ -123,5 +156,7 @@ test "not ready when label is given, but no CI succeeded", (t) ->
 
   pr.statuses = [
   ]
+
+  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
