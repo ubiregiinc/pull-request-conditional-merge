@@ -71,7 +71,7 @@ test.cb "actions merges pull request", (t) =>
   response = httpMocks.createResponse()
 
   action = Exp.action PRCM, github, null, "soutaro", null, ->
-    t.ok scopes.merge.isDone()
+    t.truthy scopes.merge.isDone()
     t.is response.statusCode, 200
     t.is response._getData(), ""
     t.end()
@@ -95,7 +95,7 @@ test.cb "action calls setup function", (t) =>
     setupIsOK = pr != null
 
   action = Exp.action PRCM, github, null, "soutaro", setup, ->
-    t.ok setupIsOK
+    t.truthy setupIsOK
     t.end()
 
   action(request, response)

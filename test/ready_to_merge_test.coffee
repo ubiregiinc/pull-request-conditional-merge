@@ -28,7 +28,7 @@ test "ready when open, label is given, CI passes", (t) ->
     }
   ]
 
-  t.ok pr.readyToMerge()
+  t.truthy pr.readyToMerge()
 
 test "not ready when label is missing, CI passes", (t) ->
   pr = new PRCM()
@@ -54,7 +54,7 @@ test "not ready when label is missing, CI passes", (t) ->
     }
   ]
 
-  t.notOk pr.readyToMerge()
+  t.falsy pr.readyToMerge()
 
 test "not ready when label is given, but CI fails", (t) ->
   pr = new PRCM()
@@ -80,7 +80,7 @@ test "not ready when label is given, but CI fails", (t) ->
     }
   ]
 
-  t.notOk pr.readyToMerge()
+  t.falsy pr.readyToMerge()
 
 test "not ready when label is given, but some CI fails", (t) ->
   pr = new PRCM()
@@ -106,7 +106,7 @@ test "not ready when label is given, but some CI fails", (t) ->
     }
   ]
 
-  t.notOk pr.readyToMerge()
+  t.falsy pr.readyToMerge()
 
 test "not ready when label is given, but no CI succeeded", (t) ->
   pr = new PRCM()
@@ -124,4 +124,4 @@ test "not ready when label is given, but no CI succeeded", (t) ->
   pr.statuses = [
   ]
 
-  t.notOk pr.readyToMerge()
+  t.falsy pr.readyToMerge()
