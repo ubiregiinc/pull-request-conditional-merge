@@ -45,6 +45,15 @@ test.cb "find pull request, fetch issue for label, fetch CI status, and merge", 
     ])
 
   nock('https://api.github.com')
+    .get('/repos/soutaro/reponame/commits/xyzzy/check-runs')
+    .reply(200, {
+      check_runs: [
+        status: "completed"
+        conclusion: "success"
+      ]
+    })
+
+  nock('https://api.github.com')
     .put('/repos/soutaro/reponame/pulls/1/merge')
     .reply(200, {})
 

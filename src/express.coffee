@@ -4,11 +4,11 @@ Express.action = (PullRequestConditionalMerge, github, logger, owner, setup, cal
   (req, res) ->
     res.end ""
 
-    return unless req.get('X-Github-Event') == "status"
+    return unless ["status", "check_run"].some (@action) -> @action == req.get('X-Github-Event')
 
-    data = req.body
-    repo = data.name.split('/')[1]
-    sha = data.sha
+    data = if @action == "status" then req.body else req.body.check_run
+    repo = req.body.repository.full_name.split('/')[1]
+    sha = data.sha ? data.head_sha
 
     logger?.debug "Receiving hook: repo=#{repo}, sha=#{sha}"
 
