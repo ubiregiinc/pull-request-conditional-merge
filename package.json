@@ -9,7 +9,7 @@
     "githubot": "^1.0.0"
   },
   "devDependencies": {
-    "ava": "^0.10.0",
+    "ava": "^1.0.0",
     "got": "^4.2.0",
     "hubot-mock-adapter": "^1.0.0",
     "hubot-test-helper": "^1.2.0",
