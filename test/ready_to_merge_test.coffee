@@ -32,6 +32,35 @@ test "ready when open, label is given, CI passes", (t) ->
 
   t.truthy pr.readyToMerge()
 
+test "not ready when open, label is given, last CI is still running", (t) ->
+  pr = new PRCM()
+
+  pr.pull = {
+    state: 'open'
+  }
+
+  pr.issue = {
+    labels: [
+      { name: "ShipIt" }
+      { name: "WIP" }
+    ]
+  }
+
+  pr.statuses = [
+    {
+      context: "super-ci/pr"
+      state: "pending"
+    },
+    {
+      context: "super-ci/pr"
+      state: "success"
+    }
+  ]
+
+  pr.check_runs = []
+
+  t.falsy pr.readyToMerge()
+
 test "not ready when label is missing, CI passes", (t) ->
   pr = new PRCM()
 
