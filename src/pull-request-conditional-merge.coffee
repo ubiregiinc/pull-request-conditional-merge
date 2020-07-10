@@ -56,8 +56,7 @@ class PullRequestConditionalMerge
     ciSucceeds = groupBy @statuses, (status) ->
       status.context
     .every (ss) ->
-      ss.some (s) ->
-        s.state == "success"
+      ss[0].state == "success"
 
     checkSucceeds = @check_runs.every (check) =>
       @logger?.debug "status = #{check.status}, conclusion = #{check.conclusion}"
