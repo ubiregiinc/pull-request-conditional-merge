@@ -28,18 +28,8 @@ class PullRequestConditionalMerge
     @logger = null
     @commitMessage = -> "Merge pull request \##{@pull.number}, via bot"
 
-  fetchIssue: (callback) ->
-    @github.get @pull._links.issue.href, (@issue) =>
-      callback()
-
-  fetchStatus: (callback) ->
-    @github.get @pull._links.statuses.href, (@statuses) =>
-      callback()
-
-  fetchCheckRuns: (callback) ->
-    check_runs_url = @pull._links.statuses.href.replace(/^(.+)\/statuses\/(.+)$/, '$1/commits/$2/check-runs')
-    @github.withOptions(apiVersion: 'antiope-preview').get check_runs_url, (res) =>
-      @check_runs = res.check_runs
+  fetchPullDetail: (callback) ->
+    @github.get @pull.url, (@pull) =>
       callback()
 
   merge: (callback) ->
@@ -52,31 +42,17 @@ class PullRequestConditionalMerge
     @github.put url, body, callback
 
   readyToMerge: () ->
-    hasLabel = @issue.labels.some (label) => label.name == @label
-    ciSucceeds = groupBy @statuses, (status) ->
-      status.context
-    .every (ss) ->
-      ss[0].state == "success"
+    hasLabel = @pull.labels.some (label) => label.name == @label
 
-    checkSucceeds = @check_runs.every (check) =>
-      @logger?.debug "status = #{check.status}, conclusion = #{check.conclusion}"
-      check.status == "completed" && check.conclusion == "success"
-
-    checkLength = @statuses.length + @check_runs.length
-
-    @logger?.debug "state = #{@pull.state}, hasLabel = #{hasLabel}, ciSucceeds = #{ciSucceeds}, checkSucceeds = #{checkSucceeds}"
-    @pull.state == "open" && hasLabel && ciSucceeds && checkSucceeds && checkLength > 0
+    @logger?.debug "mergeable_state = #{@pull.mergeable_state}, hasLabel = #{hasLabel}"
+    @pull.state == "open" && hasLabel && @pull.mergeable_state == "clean"
 
   mergeIfReady: (callback) ->
-    @fetchIssue =>
-      @logger?.debug "Fetched issue..."
-      @fetchStatus =>
-        @logger?.debug "Fetched #{@statuses.length} status..."
-        @fetchCheckRuns =>
-          @logger?.debug "Fetched #{@check_runs.length} check-runs..."
-          if @readyToMerge()
-            @merge =>
-              callback()
+    @fetchPullDetail =>
+      @logger?.debug "Fetched pull detail..."
+      if @readyToMerge()
+        @merge =>
+          callback()
 
   # PullRequestConditionalMerge.find @github, owner: "ubiregiinc", repo: "ubiregi-server", sha: "12345678", (pr) =>
   #   ....

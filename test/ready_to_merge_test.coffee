@@ -3,189 +3,69 @@ nock = require("nock")
 
 PRCM = require('../src/pull-request-conditional-merge')
 
-test "ready when open, label is given, CI passes", (t) ->
+test "ready when open, mergeable_state is clean", (t) ->
   pr = new PRCM()
 
   pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
+    state: 'open',
     labels: [
-      { name: "ShipIt" }
+      { name: "ShipIt" },
       { name: "WIP" }
-    ]
+    ],
+    mergeable_state: "clean"
   }
-
-  pr.statuses = [
-    {
-      context: "super-ci/pr"
-      state: "success"
-    },
-    {
-      context: "super-ci/pr"
-      state: "pending"
-    }
-  ]
-
-  pr.check_runs = []
 
   t.truthy pr.readyToMerge()
 
-test "not ready when open, label is given, last CI is still running", (t) ->
+test "not ready when open, mergeable_state is unknown", (t) ->
   pr = new PRCM()
 
   pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
+    state: 'open',
     labels: [
-      { name: "ShipIt" }
+      { name: "ShipIt" },
       { name: "WIP" }
-    ]
+    ],
+    mergeable_state: "unknown"
   }
-
-  pr.statuses = [
-    {
-      context: "super-ci/pr"
-      state: "pending"
-    },
-    {
-      context: "super-ci/pr"
-      state: "success"
-    }
-  ]
-
-  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
 
-test "not ready when label is missing, CI passes", (t) ->
+test "not ready when label is missing, mergeable_state is clean", (t) ->
   pr = new PRCM()
 
   pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
+    state: 'open',
     labels: [
       { name: "WIP" }
-    ]
+    ],
+    mergeable_state: "clean"
   }
-
-  pr.statuses = [
-    {
-      context: "super-ci/pr"
-      state: "success"
-    },
-    {
-      context: "super-ci/pr"
-      state: "pending"
-    }
-  ]
-
-  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
 
-test "not ready when label is given, but CI fails", (t) ->
+test "not ready when label is given, but mergeable_state is unstable", (t) ->
   pr = new PRCM()
 
   pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
+    state: 'open',
     labels: [
       { name: "ShipIt" }
-    ]
+    ],
+    mergeable_state: "unstable"
   }
-
-  pr.statuses = [
-    {
-      context: "super-ci/pr"
-      state: "error"
-    },
-    {
-      context: "super-ci/pr"
-      state: "pending"
-    }
-  ]
-
-  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
 
-test "not ready when label is given, but some CI fails", (t) ->
+test "not ready when label is given, but mergeable_state is blocked", (t) ->
   pr = new PRCM()
 
   pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
+    state: 'open',
     labels: [
       { name: "ShipIt" }
-    ]
+    ],
+    mergeable_state: "blocked"
   }
-
-  pr.statuses = [
-    {
-      context: "super-ci/pr"
-      state: "success"
-    },
-    {
-      context: "super-ci/push"
-      state: "error"
-    }
-  ]
-
-  pr.check_runs = []
-
-  t.falsy pr.readyToMerge()
-
-test "not ready when label is given, but some check-run fails", (t) ->
-  pr = new PRCM()
-
-  pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
-    labels: [
-      { name: "ShipIt" }
-    ]
-  }
-
-  pr.statuses = [
-  ]
-
-  pr.check_runs = [
-    {
-      status: "completed"
-      conclusion: "failed"
-    }
-  ]
-
-  t.falsy pr.readyToMerge()
-
-test "not ready when label is given, but no CI succeeded", (t) ->
-  pr = new PRCM()
-
-  pr.pull = {
-    state: 'open'
-  }
-
-  pr.issue = {
-    labels: [
-      { name: "ShipIt" }
-    ]
-  }
-
-  pr.statuses = [
-  ]
-
-  pr.check_runs = []
 
   t.falsy pr.readyToMerge()
